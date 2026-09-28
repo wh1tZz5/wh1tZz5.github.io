@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="theme-color" content="#f4f5f0">
+	<meta name="description" content="一个简洁的个人主页测试页面。">
+	<title>首页测试 · 林间</title>
+	<style>
+		:root {
+			color-scheme: light;
+			--ink: #202722;
+			--muted: #68746c;
+			--paper: #f4f5f0;
+			--green: #315c48;
+			--line: #dce1d9;
+		}
+
+		* { box-sizing: border-box; }
+
+		body {
+			margin: 0;
+			background: var(--paper);
+			color: var(--ink);
+			font-family: "Noto Sans SC", "Microsoft YaHei", sans-serif;
+			line-height: 1.6;
+		}
+
+		a { color: inherit; text-decoration: none; }
+
+		.site-header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			width: min(1080px, calc(100% - 48px));
+			min-height: 76px;
+			margin: 0 auto;
+		}
+
+		.brand {
+			display: inline-flex;
+			align-items: center;
+			gap: 10px;
+			font-size: 15px;
+			font-weight: 700;
+		}
+
+		.brand-mark {
+			display: grid;
+			width: 30px;
+			aspect-ratio: 1;
+			place-items: center;
+			border-radius: 50%;
+			background: var(--green);
+			color: white;
+			font-size: 14px;
+		}
+
+		nav { display: flex; gap: 28px; color: var(--muted); font-size: 14px; }
+		nav a:hover, nav a:focus-visible { color: var(--green); }
+
+		main { width: min(1080px, calc(100% - 48px)); margin: 0 auto; }
+
+		.hero {
+			display: grid;
+			grid-template-columns: 1fr 0.88fr;
+			align-items: center;
+			gap: 64px;
+			min-height: 510px;
+			padding: 52px 0 66px;
+		}
+
+		.eyebrow {
+			margin: 0 0 18px;
+			color: var(--green);
+			font-size: 12px;
+			font-weight: 700;
+			letter-spacing: 0.12em;
+			text-transform: uppercase;
+		}
+
+		h1 {
+			max-width: 520px;
+			margin: 0;
+			font-family: "Noto Serif SC", "Songti SC", serif;
+			font-size: clamp(40px, 6vw, 68px);
+			font-weight: 600;
+			line-height: 1.2;
+		}
+
+		.intro { max-width: 420px; margin: 22px 0 28px; color: var(--muted); }
+
+		.action {
+			display: inline-flex;
+			align-items: center;
+			gap: 12px;
+			min-height: 46px;
+			padding: 0 18px;
+			border-radius: 3px;
+			background: var(--green);
+			color: white;
+			font-size: 14px;
+			transition: background 160ms ease, transform 160ms ease;
+		}
+
+		.action:hover { transform: translateY(-2px); background: #244a37; }
+		.action:focus-visible, a:focus-visible { outline: 3px solid #a4c4ad; outline-offset: 4px; }
+
+		.hero-image {
+			display: block;
+			width: 100%;
+			aspect-ratio: 4 / 5;
+			max-height: 410px;
+			object-fit: cover;
+			border-radius: 2px;
+			background: #d9e0d7;
+		}
+
+		.highlights {
+			display: grid;
+			grid-template-columns: repeat(3, 1fr);
+			border-top: 1px solid var(--line);
+			padding: 30px 0 38px;
+		}
+
+		.highlight { padding: 0 28px; border-left: 1px solid var(--line); }
+		.highlight:first-child { padding-left: 0; border-left: 0; }
+		.highlight h2 { margin: 0 0 6px; font-size: 15px; }
+		.highlight p { margin: 0; color: var(--muted); font-size: 13px; }
+
+		footer {
+			display: flex;
+			justify-content: space-between;
+			width: min(1080px, calc(100% - 48px));
+			margin: 0 auto;
+			padding: 20px 0 26px;
+			border-top: 1px solid var(--line);
+			color: var(--muted);
+			font-size: 12px;
+		}
+
+		@media (max-width: 680px) {
+			.site-header, main, footer { width: min(100% - 36px, 520px); }
+			.site-header { min-height: 66px; }
+			nav { gap: 16px; font-size: 13px; }
+			.hero { grid-template-columns: 1fr; gap: 30px; min-height: auto; padding: 48px 0 42px; }
+			h1 { font-size: 46px; }
+			.hero-image { aspect-ratio: 16 / 10; max-height: none; }
+			.highlights { grid-template-columns: 1fr; gap: 22px; padding: 25px 0 30px; }
+			.highlight, .highlight:first-child { padding: 0; border: 0; }
+			footer { gap: 14px; flex-wrap: wrap; }
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			*, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+		}
+	</style>
+</head>
+<body>
+	<header class="site-header">
+		<a class="brand" href="#home" aria-label="林间，返回首页">
+			<span class="brand-mark" aria-hidden="true">林</span>
+			<span>林间 · 个人主页</span>
+		</a>
+		<nav aria-label="主导航">
+			<a href="#about">关于</a>
+			<a href="#notes">随记</a>
+			<a href="#contact">联系</a>
+		</nav>
+	</header>
+
+	<main id="home">
+		<section class="hero" aria-labelledby="hero-title">
+			<div>
+				<p class="eyebrow">A little place on the web</p>
+				<h1 id="hero-title">你好，<br>欢迎来到这里。</h1>
+				<p class="intro">这是一个简单的个人主页测试页面。放一点介绍、一些正在做的事，再留一个继续交流的入口。</p>
+				<a class="action" href="#about">认识一下 <span aria-hidden="true">→</span></a>
+			</div>
+			<img class="hero-image" src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1000&q=85" alt="阳光穿过安静的森林">
+		</section>
+
+		<section class="highlights" aria-label="页面内容">
+			<article class="highlight" id="about">
+				<h2>关于我</h2>
+				<p>写下你的简介、兴趣，或你最近在关注的事情。</p>
+			</article>
+			<article class="highlight" id="notes">
+				<h2>最近在做</h2>
+				<p>这里可以放项目、作品链接，或者一条近况。</p>
+			</article>
+			<article class="highlight" id="contact">
+				<h2>保持联系</h2>
+				<p><a href="mailto:hello@example.com">hello@example.com</a></p>
+			</article>
+		</section>
+	</main>
+
+	<footer>
+		<span>© 2026 林间</span>
+		<span>慢一点，也没关系。</span>
+	</footer>
+</body>
+</html>
