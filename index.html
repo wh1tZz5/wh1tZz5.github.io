@@ -1,204 +1,612 @@
-<!doctype html>
-<html lang="zh-CN">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="theme-color" content="#f4f5f0">
-	<meta name="description" content="一个简洁的个人主页测试页面。">
-	<title>首页测试 · 林间</title>
-	<style>
-		:root {
-			color-scheme: light;
-			--ink: #202722;
-			--muted: #68746c;
-			--paper: #f4f5f0;
-			--green: #315c48;
-			--line: #dce1d9;
-		}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>wh1tZz5 · 个人博客</title>
+  <!-- 使用 Google Font 提升现代感 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <!-- Font Awesome 6 图标库 (免费) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* 全局重置与变量 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-		* { box-sizing: border-box; }
+    :root {
+      --bg: #0b0d10;
+      --surface: #14171c;
+      --surface-light: #1e2228;
+      --text: #eef2f6;
+      --text-secondary: #a6b3c2;
+      --accent: #4a9eff;
+      --accent-glow: rgba(74, 158, 255, 0.25);
+      --border: #2a2f36;
+      --radius: 20px;
+      --shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.5);
+      --transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1);
+    }
 
-		body {
-			margin: 0;
-			background: var(--paper);
-			color: var(--ink);
-			font-family: "Noto Sans SC", "Microsoft YaHei", sans-serif;
-			line-height: 1.6;
-		}
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.5rem 1.5rem 3rem;
+    }
 
-		a { color: inherit; text-decoration: none; }
+    .container {
+      max-width: 1100px;
+      width: 100%;
+    }
 
-		.site-header {
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			width: min(1080px, calc(100% - 48px));
-			min-height: 76px;
-			margin: 0 auto;
-		}
+    /* 顶部导航栏 (极简) */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0 1.5rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 2.5rem;
+      flex-wrap: wrap;
+    }
 
-		.brand {
-			display: inline-flex;
-			align-items: center;
-			gap: 10px;
-			font-size: 15px;
-			font-weight: 700;
-		}
+    .logo {
+      font-weight: 700;
+      font-size: 1.6rem;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
 
-		.brand-mark {
-			display: grid;
-			width: 30px;
-			aspect-ratio: 1;
-			place-items: center;
-			border-radius: 50%;
-			background: var(--green);
-			color: white;
-			font-size: 14px;
-		}
+    .logo i {
+      color: var(--accent);
+      font-size: 1.5rem;
+    }
 
-		nav { display: flex; gap: 28px; color: var(--muted); font-size: 14px; }
-		nav a:hover, nav a:focus-visible { color: var(--green); }
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      font-weight: 500;
+    }
 
-		main { width: min(1080px, calc(100% - 48px)); margin: 0 auto; }
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: var(--transition);
+      border-bottom: 2px solid transparent;
+      padding-bottom: 0.25rem;
+    }
 
-		.hero {
-			display: grid;
-			grid-template-columns: 1fr 0.88fr;
-			align-items: center;
-			gap: 64px;
-			min-height: 510px;
-			padding: 52px 0 66px;
-		}
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--text);
+      border-bottom-color: var(--accent);
+    }
 
-		.eyebrow {
-			margin: 0 0 18px;
-			color: var(--green);
-			font-size: 12px;
-			font-weight: 700;
-			letter-spacing: 0.12em;
-			text-transform: uppercase;
-		}
+    /* 个人资料卡片 (Hero) */
+    .hero {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 2.5rem;
+      background: linear-gradient(135deg, var(--surface) 0%, #0f1217 100%);
+      border-radius: var(--radius);
+      padding: 2.5rem;
+      margin-bottom: 2.8rem;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
 
-		h1 {
-			max-width: 520px;
-			margin: 0;
-			font-family: "Noto Serif SC", "Songti SC", serif;
-			font-size: clamp(40px, 6vw, 68px);
-			font-weight: 600;
-			line-height: 1.2;
-		}
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -10%;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
 
-		.intro { max-width: 420px; margin: 22px 0 28px; color: var(--muted); }
+    .avatar-wrapper {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-		.action {
-			display: inline-flex;
-			align-items: center;
-			gap: 12px;
-			min-height: 46px;
-			padding: 0 18px;
-			border-radius: 3px;
-			background: var(--green);
-			color: white;
-			font-size: 14px;
-			transition: background 160ms ease, transform 160ms ease;
-		}
+    .avatar {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1f2a36, #0f1318);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 3px solid var(--accent);
+      box-shadow: 0 0 25px var(--accent-glow);
+      transition: var(--transition);
+    }
 
-		.action:hover { transform: translateY(-2px); background: #244a37; }
-		.action:focus-visible, a:focus-visible { outline: 3px solid #a4c4ad; outline-offset: 4px; }
+    .avatar i {
+      font-size: 4.5rem;
+      color: var(--accent);
+      filter: drop-shadow(0 0 8px rgba(74, 158, 255, 0.5));
+    }
 
-		.hero-image {
-			display: block;
-			width: 100%;
-			aspect-ratio: 4 / 5;
-			max-height: 410px;
-			object-fit: cover;
-			border-radius: 2px;
-			background: #d9e0d7;
-		}
+    .hero-content {
+      flex: 1;
+      min-width: 260px;
+      z-index: 2;
+    }
 
-		.highlights {
-			display: grid;
-			grid-template-columns: repeat(3, 1fr);
-			border-top: 1px solid var(--line);
-			padding: 30px 0 38px;
-		}
+    .hero-content h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.35rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
 
-		.highlight { padding: 0 28px; border-left: 1px solid var(--line); }
-		.highlight:first-child { padding-left: 0; border-left: 0; }
-		.highlight h2 { margin: 0 0 6px; font-size: 15px; }
-		.highlight p { margin: 0; color: var(--muted); font-size: 13px; }
+    .hero-content h1 span {
+      background: linear-gradient(135deg, #ffffff, #9bb9e0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
 
-		footer {
-			display: flex;
-			justify-content: space-between;
-			width: min(1080px, calc(100% - 48px));
-			margin: 0 auto;
-			padding: 20px 0 26px;
-			border-top: 1px solid var(--line);
-			color: var(--muted);
-			font-size: 12px;
-		}
+    .handle {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--accent);
+      background: rgba(74, 158, 255, 0.12);
+      padding: 0.25rem 0.9rem;
+      border-radius: 50px;
+      display: inline-block;
+      margin-bottom: 1rem;
+      border: 1px solid rgba(74, 158, 255, 0.3);
+    }
 
-		@media (max-width: 680px) {
-			.site-header, main, footer { width: min(100% - 36px, 520px); }
-			.site-header { min-height: 66px; }
-			nav { gap: 16px; font-size: 13px; }
-			.hero { grid-template-columns: 1fr; gap: 30px; min-height: auto; padding: 48px 0 42px; }
-			h1 { font-size: 46px; }
-			.hero-image { aspect-ratio: 16 / 10; max-height: none; }
-			.highlights { grid-template-columns: 1fr; gap: 22px; padding: 25px 0 30px; }
-			.highlight, .highlight:first-child { padding: 0; border: 0; }
-			footer { gap: 14px; flex-wrap: wrap; }
-		}
+    .bio {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+      max-width: 550px;
+      margin: 1rem 0 1.75rem;
+    }
 
-		@media (prefers-reduced-motion: reduce) {
-			*, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
-		}
-	</style>
+    .social-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+    }
+
+    .social-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: var(--surface-light);
+      color: var(--text);
+      text-decoration: none;
+      padding: 0.7rem 1.3rem;
+      border-radius: 40px;
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: var(--transition);
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .social-btn i {
+      font-size: 1.1rem;
+      color: var(--accent);
+    }
+
+    .social-btn:hover {
+      background: var(--accent);
+      color: #0b0d10;
+      border-color: var(--accent);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 18px -8px var(--accent-glow);
+    }
+
+    .social-btn:hover i {
+      color: #0b0d10;
+    }
+
+    /* 文章/项目 标题区 */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin: 2.5rem 0 1.5rem;
+    }
+
+    .section-header h2 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .section-header h2 i {
+      color: var(--accent);
+      font-size: 1.6rem;
+    }
+
+    .section-header .view-all {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: var(--transition);
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .section-header .view-all:hover {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    /* 博客卡片网格 */
+    .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.8rem;
+      margin-bottom: 1rem;
+    }
+
+    .blog-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 1.7rem 1.5rem;
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 6px 12px -6px rgba(0, 0, 0, 0.3);
+    }
+
+    .blog-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(74, 158, 255, 0.6);
+      box-shadow: 0 22px 30px -12px rgba(0, 0, 0, 0.6);
+      background: #171b21;
+    }
+
+    .card-icon {
+      font-size: 2rem;
+      color: var(--accent);
+      margin-bottom: 1.2rem;
+      background: rgba(74, 158, 255, 0.08);
+      width: 54px;
+      height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 16px;
+      border: 1px solid rgba(74, 158, 255, 0.2);
+    }
+
+    .blog-card h3 {
+      font-size: 1.35rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+      color: #ffffff;
+    }
+
+    .blog-card p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      margin-bottom: 1.5rem;
+      flex: 1;
+    }
+
+    .card-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: #7b8a9b;
+      border-top: 1px solid var(--border);
+      padding-top: 1rem;
+      margin-top: auto;
+    }
+
+    .card-meta span {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .card-meta i {
+      font-size: 0.8rem;
+      color: var(--accent);
+    }
+
+    .tag {
+      background: rgba(74, 158, 255, 0.12);
+      padding: 0.2rem 0.8rem;
+      border-radius: 50px;
+      color: var(--accent);
+      font-weight: 500;
+      font-size: 0.75rem;
+      border: 1px solid rgba(74, 158, 255, 0.3);
+    }
+
+    /* 页脚 */
+    .footer {
+      margin-top: 4rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      color: #6e7d8e;
+      font-size: 0.9rem;
+      gap: 1rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.8rem;
+    }
+
+    .footer-links a {
+      color: #6e7d8e;
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .footer-links a:hover {
+      color: var(--accent);
+    }
+
+    /* 响应式调整 */
+    @media (max-width: 640px) {
+      body {
+        padding: 1rem 1rem 2rem;
+      }
+
+      .hero {
+        padding: 1.8rem;
+        gap: 1.5rem;
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .avatar {
+        width: 110px;
+        height: 110px;
+      }
+
+      .avatar i {
+        font-size: 3.8rem;
+      }
+
+      .hero-content h1 {
+        font-size: 2rem;
+        justify-content: center;
+      }
+
+      .bio {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .social-links {
+        justify-content: center;
+      }
+
+      .section-header {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: flex-start;
+      }
+
+      .navbar {
+        flex-direction: column;
+        gap: 0.8rem;
+        align-items: flex-start;
+      }
+
+      .nav-links {
+        gap: 1.5rem;
+      }
+
+      .footer {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+
+    /* 小点缀：选中文本颜色 */
+    ::selection {
+      background: var(--accent);
+      color: #0b0d10;
+    }
+  </style>
 </head>
 <body>
-	<header class="site-header">
-		<a class="brand" href="#home" aria-label="林间，返回首页">
-			<span class="brand-mark" aria-hidden="true">林</span>
-			<span>林间 · 个人主页</span>
-		</a>
-		<nav aria-label="主导航">
-			<a href="#about">关于</a>
-			<a href="#notes">随记</a>
-			<a href="#contact">联系</a>
-		</nav>
-	</header>
+  <div class="container">
+    <!-- 导航栏 / 顶部 -->
+    <nav class="navbar">
+      <a href="#" class="logo">
+        <i class="fas fa-code"></i> wh1tZz5
+      </a>
+      <div class="nav-links">
+        <a href="#" class="active">博客</a>
+        <a href="#">项目</a>
+        <a href="#">关于</a>
+        <a href="#">搜索</a>
+      </div>
+    </nav>
 
-	<main id="home">
-		<section class="hero" aria-labelledby="hero-title">
-			<div>
-				<p class="eyebrow">A little place on the web</p>
-				<h1 id="hero-title">你好，<br>欢迎来到这里。</h1>
-				<p class="intro">这是一个简单的个人主页测试页面。放一点介绍、一些正在做的事，再留一个继续交流的入口。</p>
-				<a class="action" href="#about">认识一下 <span aria-hidden="true">→</span></a>
-			</div>
-			<img class="hero-image" src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1000&q=85" alt="阳光穿过安静的森林">
-		</section>
+    <!-- 个人资料卡片 (Hero) -->
+    <header class="hero">
+      <div class="avatar-wrapper">
+        <div class="avatar">
+          <!-- 使用 Font Awesome 图标作为头像占位，你可以替换为 <img> 标签引入真实头像 -->
+          <i class="fas fa-user-astronaut"></i>
+        </div>
+      </div>
+      <div class="hero-content">
+        <h1>
+          <span>wh1tZz5</span>
+          <span class="handle">@wh1tZz5</span>
+        </h1>
+        <p class="bio">
+          开发者 · 安全爱好者 · 终身学习者。在这里记录技术思考、安全笔记与编程日常。保持好奇，保持热爱。
+        </p>
+        <div class="social-links">
+          <a href="https://github.com/wh1tZz5" class="social-btn" target="_blank" rel="noopener">
+            <i class="fab fa-github"></i> GitHub
+          </a>
+          <a href="#" class="social-btn" target="_blank" rel="noopener">
+            <i class="fab fa-twitter"></i> Twitter
+          </a>
+          <a href="#" class="social-btn" target="_blank" rel="noopener">
+            <i class="fas fa-envelope"></i> Email
+          </a>
+        </div>
+      </div>
+    </header>
 
-		<section class="highlights" aria-label="页面内容">
-			<article class="highlight" id="about">
-				<h2>关于我</h2>
-				<p>写下你的简介、兴趣，或你最近在关注的事情。</p>
-			</article>
-			<article class="highlight" id="notes">
-				<h2>最近在做</h2>
-				<p>这里可以放项目、作品链接，或者一条近况。</p>
-			</article>
-			<article class="highlight" id="contact">
-				<h2>保持联系</h2>
-				<p><a href="mailto:hello@example.com">hello@example.com</a></p>
-			</article>
-		</section>
-	</main>
+    <!-- 最新文章 区域 -->
+    <div class="section-header">
+      <h2>
+        <i class="fas fa-pen-fancy"></i> 最新文章
+      </h2>
+      <a href="#" class="view-all">查看全部 <i class="fas fa-arrow-right"></i></a>
+    </div>
 
-	<footer>
-		<span>© 2026 林间</span>
-		<span>慢一点，也没关系。</span>
-	</footer>
+    <div class="blog-grid">
+      <!-- 卡片 1 -->
+      <article class="blog-card">
+        <div class="card-icon">
+          <i class="fas fa-shield-halved"></i>
+        </div>
+        <h3>Web 安全入门：XSS 与 CSRF 核心解析</h3>
+        <p>从原理到防御，理解跨站脚本与跨站请求伪造的常见场景及现代防护策略。</p>
+        <div class="card-meta">
+          <span><i class="far fa-calendar-alt"></i> 2025-03-12</span>
+          <span class="tag">安全</span>
+        </div>
+      </article>
+
+      <!-- 卡片 2 -->
+      <article class="blog-card">
+        <div class="card-icon">
+          <i class="fas fa-code-branch"></i>
+        </div>
+        <h3>Git 进阶：从 rebase 到 worktree 的高效工作流</h3>
+        <p>掌握交互式 rebase、cherry-pick 与 worktree，让版本控制更加得心应手。</p>
+        <div class="card-meta">
+          <span><i class="far fa-calendar-alt"></i> 2025-02-28</span>
+          <span class="tag">工具</span>
+        </div>
+      </article>
+
+      <!-- 卡片 3 -->
+      <article class="blog-card">
+        <div class="card-icon">
+          <i class="fas fa-terminal"></i>
+        </div>
+        <h3>Linux 提权基础：SUID 与 Capabilities 详解</h3>
+        <p>从枚举到利用，剖析 Linux 权限提升中常见的 SUID 和 Capabilities 配置错误。</p>
+        <div class="card-meta">
+          <span><i class="far fa-calendar-alt"></i> 2025-02-10</span>
+          <span class="tag">Linux</span>
+        </div>
+      </article>
+
+      <!-- 卡片 4 (额外展示更多内容) -->
+      <article class="blog-card">
+        <div class="card-icon">
+          <i class="fas fa-cloud"></i>
+        </div>
+        <h3>使用 GitHub Actions 自动化部署静态博客</h3>
+        <p>基于 GitHub Pages 与 Actions，实现博客的自动构建和持续部署流程。</p>
+        <div class="card-meta">
+          <span><i class="far fa-calendar-alt"></i> 2025-01-18</span>
+          <span class="tag">DevOps</span>
+        </div>
+      </article>
+    </div>
+
+    <!-- 项目精选 可以加一点轻量展示 (可选) -->
+    <div class="section-header" style="margin-top: 3rem;">
+      <h2>
+        <i class="fas fa-cubes"></i> 精选项目
+      </h2>
+      <a href="#" class="view-all">全部项目 <i class="fas fa-arrow-right"></i></a>
+    </div>
+
+    <div class="blog-grid">
+      <article class="blog-card">
+        <div class="card-icon">
+          <i class="fas fa-fingerprint"></i>
+        </div>
+        <h3>ReconCat · 资产收集工具</h3>
+        <p>轻量级信息收集与子域名发现工具，用于安全评估前期侦察。</p>
+        <div class="card-meta">
+          <span><i class="fab fa-github"></i> wh1tZz5/reconcat</span>
+          <span class="tag">Python</span>
+        </div>
+      </article>
+      <article class="blog-card">
+        <div class="card-icon">
+          <i class="fas fa-note-sticky"></i>
+        </div>
+        <h3>NoteVault · 加密笔记</h3>
+        <p>本地优先的加密笔记应用，支持 Markdown 与端到端加密。</p>
+        <div class="card-meta">
+          <span><i class="fab fa-github"></i> wh1tZz5/notevault</span>
+          <span class="tag">TypeScript</span>
+        </div>
+      </article>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+      <div>© 2025 wh1tZz5 · 保持热爱，奔赴山海</div>
+      <div class="footer-links">
+        <a href="#"><i class="fab fa-github"></i> GitHub</a>
+        <a href="#"><i class="fas fa-rss"></i> RSS</a>
+        <a href="#"><i class="fas fa-heart"></i> 关于</a>
+      </div>
+    </footer>
+  </div>
+
+  <!-- 微小的交互：让当前年份自动更新（可选，但为了简洁，保留静态也没问题） -->
+  <script>
+    // 简单的控制台欢迎信息 (无伤大雅的小彩蛋)
+    console.log('%c wh1tZz5.github.io ', 'background: #4a9eff; color: #0b0d10; font-weight: bold; padding: 4px 8px; border-radius: 6px;');
+    console.log('%c 欢迎来到我的个人博客！ ', 'color: #a6b3c2; font-size: 14px;');
+  </script>
 </body>
 </html>
