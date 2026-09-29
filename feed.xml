@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>wh1tZz5 · 记录与思考</title>
+    <link>https://wh1tzz5.github.io/</link>
+    <description>技术笔记、项目复盘和一些零散想法。</description>
+    <language>zh-CN</language>
+    <atom:link href="https://wh1tzz5.github.io/feed.xml" rel="self" type="application/rss+xml"/>
+    <lastBuildDate>Tue, 12 Mar 2026 00:00:00 GMT</lastBuildDate>
+
+    <item>
+      <title>Web 安全入门：XSS 与 CSRF 核心解析</title>
+      <link>https://wh1tzz5.github.io/blog/xss-csrf.html</link>
+      <guid>https://wh1tzz5.github.io/blog/xss-csrf.html</guid>
+      <description>从原理到防御，理解跨站脚本与跨站请求伪造的常见场景，以及现代浏览器提供的防护策略。</description>
+      <pubDate>Tue, 12 Mar 2026 08:00:00 GMT</pubDate>
+    </item>
+
+    <item>
+      <title>Git 进阶：rebase、cherry-pick 与 worktree</title>
+      <link>https://wh1tzz5.github.io/blog/git-advanced.html</link>
+      <guid>https://wh1tzz5.github.io/blog/git-advanced.html</guid>
+      <description>掌握交互式 rebase 和 cherry-pick，让版本历史保持整洁，用 worktree 同时处理多个分支。</description>
+      <pubDate>Sun, 28 Feb 2026 08:00:00 GMT</pubDate>
+    </item>
+
+    <item>
+      <title>Linux 提权基础：SUID 与 Capabilities 详解</title>
+      <link>https://wh1tzz5.github.io/blog/linux-privesc.html</link>
+      <guid>https://wh1tzz5.github.io/blog/linux-privesc.html</guid>
+      <description>从枚举到利用，剖析 Linux 权限提升中常见的 SUID 和 Capabilities 配置错误。</description>
+      <pubDate>Tue, 10 Feb 2026 08:00:00 GMT</pubDate>
+    </item>
+
+    <item>
+      <title>用 GitHub Actions 自动化部署静态博客</title>
+      <link>https://wh1tzz5.github.io/blog/github-actions.html</link>
+      <guid>https://wh1tzz5.github.io/blog/github-actions.html</guid>
+      <description>基于 GitHub Pages 与 Actions，实现博客的自动构建与持续部署流程。</description>
+      <pubDate>Sun, 18 Jan 2026 08:00:00 GMT</pubDate>
+    </item>
+
+  </channel>
+</rss>

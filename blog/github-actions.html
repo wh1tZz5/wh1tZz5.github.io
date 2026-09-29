@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>用 GitHub Actions 自动化部署静态博客 · wh1tZz5</title>
+<meta name="description" content="基于 GitHub Pages 与 Actions，实现博客的自动构建与持续部署流程。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/article.css">
+</head>
+<body>
+
+<header class="site-header" id="header">
+  <div class="container">
+    <nav class="nav">
+      <a href="/" class="nav-logo">wh1tZz5</a>
+      <ul class="nav-menu">
+        <li><a href="/">首页</a></li>
+        <li><a href="/blog/" class="active">博客</a></li>
+        <li><a href="/projects.html">项目</a></li>
+        <li><a href="/about.html">关于</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<article class="article">
+  <div class="container">
+    <div class="article-meta">
+      <span>2026-01-18</span>
+      <span class="dot"></span>
+      <span class="post-tag">DevOps</span>
+      <span class="dot"></span>
+      <span>约 7 分钟</span>
+    </div>
+    <h1>用 GitHub Actions 自动化部署静态博客</h1>
+
+    <div class="article-body">
+      <p>纯静态博客最大的好处就是部署零成本，而 GitHub Actions 让「写完自动上线」这件事彻底免维护。本文记录一套最小可用的配置：推送即部署，带 lint 校验，失败可回滚。</p>
+
+      <h2>一、仓库结构</h2>
+      <pre><code>my-blog/
+├── .github/
+│   └── workflows/
+│       └── deploy.yml
+├── content/
+│   └── posts/
+│       └── 2026-01-18-hello.md
+├── package.json
+└── dist/                # 构建产物，已被 .gitignore 忽略</code></pre>
+
+      <p>源文件放在 <code>content/</code>，构建工具（静态生成器或本地脚本）把它们渲染到 <code>dist/</code>。仓库里不提交 <code>dist/</code>，由 CI 现场生成。</p>
+
+      <h2>二、GitHub Pages 托管方式</h2>
+      <p>GitHub Pages 有两种模式：</p>
+      <ul>
+        <li><strong>从分支</strong>：直接发布某个分支（如 <code>gh-pages</code>）的内容。简单，适合纯静态文件。</li>
+        <li><strong>从 Actions</strong>：让 workflow 把 <code>dist/</code> 上传为 <code>actions/pages</code> 的构建产物。适合有构建步骤的项目。</li>
+      </ul>
+      <p>本文用后者，因为博客内容需要本地先构建。</p>
+
+      <h2>三、deploy.yml</h2>
+      <pre><code>name: Build &amp; Deploy
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:    # 允许手动触发
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build        # 输出到 dist/
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+    steps:
+      - uses: actions/deploy-pages@v3</code></pre>
+
+      <h3>关键点</h3>
+      <ul>
+        <li><code>npm ci</code> 比 <code>npm install</code> 更可复现，依赖锁定到 <code>package-lock.json</code>。</li>
+        <li><code>concurrency</code> 防止两个 deploy 作业并行竞争 Pages 部署。</li>
+        <li><code>id-token: write</code> 是 OIDC 鉴权部署 Pages 必需的。</li>
+      </ul>
+
+      <h2>四、失败回滚</h2>
+      <p>Pages 部署失败时，站点保持上一个成功版本，不会下线。手动排查：</p>
+      <pre><code>git revert &lt;bad-commit&gt;
+git push origin main
+# 触发新的 workflow，恢复上一个可构建版本</code></pre>
+
+      <h2>五、小结</h2>
+      <p>整套配置不到 50 行，覆盖推送即构建、上传产物、部署、并发保护和手动回滚。博客本身是纯静态的，CI 只需做构建这一步，其余完全交给 GitHub Pages 托管。</p>
+    </div>
+
+    <nav class="article-nav">
+      <a href="/blog/linux-privesc.html" class="next">
+        <span class="nav-label">下一篇</span>
+        Linux 提权基础：SUID 与 Capabilities 详解
+      </a>
+    </nav>
+  </div>
+</article>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-social">
+      <a href="https://github.com/wh1tZz5" target="_blank" rel="noopener" aria-label="GitHub"><i class="fab fa-github"></i></a>
+      <a href="mailto:hi@example.com" aria-label="Email"><i class="fas fa-envelope"></i></a>
+      <a href="/feed.xml" aria-label="RSS"><i class="fas fa-rss"></i></a>
+    </div>
+    <p class="footer-text">
+      © 2026 wh1tZz5 · 保持好奇，保持热爱<br>
+      Powered by <a href="https://pages.github.com" target="_blank" rel="noopener">GitHub Pages</a>
+    </p>
+  </div>
+</footer>
+
+<script src="/js/main.js"></script>
+</body>
+</html>

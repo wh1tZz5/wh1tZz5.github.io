@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linux 提权基础：SUID 与 Capabilities 详解 · wh1tZz5</title>
+<meta name="description" content="从枚举到利用，剖析 Linux 权限提升中常见的 SUID 和 Capabilities 配置错误。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/article.css">
+</head>
+<body>
+
+<header class="site-header" id="header">
+  <div class="container">
+    <nav class="nav">
+      <a href="/" class="nav-logo">wh1tZz5</a>
+      <ul class="nav-menu">
+        <li><a href="/">首页</a></li>
+        <li><a href="/blog/" class="active">博客</a></li>
+        <li><a href="/projects.html">项目</a></li>
+        <li><a href="/about.html">关于</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<article class="article">
+  <div class="container">
+    <div class="article-meta">
+      <span>2026-02-10</span>
+      <span class="dot"></span>
+      <span class="post-tag">Linux</span>
+      <span class="dot"></span>
+      <span>约 9 分钟</span>
+    </div>
+    <h1>Linux 提权基础：SUID 与 Capabilities 详解</h1>
+
+    <div class="article-body">
+      <p>Linux 提权（Privilege Escalation）指在已经获得普通用户权限的前提下，把权限提升到 root 或更高。最常见的两类源头是 SUID 位滥用和 Capabilities 配置错误。本文只做原理与枚举方法整理，重点放在「如何发现可被利用的误配置」。</p>
+
+      <div class="callout"><p><strong>免责声明：</strong> 以下内容仅用于安全测试、CTF、自有环境加固学习。未经授权的提权尝试在现实中属于违法行为。</p></div>
+
+      <h2>一、先搞清楚当前能做什么</h2>
+      <p>拿到一个 shell 后，第一步永远是收集信息：</p>
+      <pre><code>whoami; id
+sudo -nl            # 查看当前用户有哪些 sudo 免密/可执行的命令
+cat /etc/passwd | grep -v nologin
+getcap -r / 2>/dev/null   # 带 Capabilities 的文件（root 时）</code></pre>
+
+      <h2>二、SUID 位：让普通用户以 root 身份运行程序</h2>
+      <p>SUID（Set UID）是文件权限里的一个特殊位。当一个可执行文件设置了 SUID root，任何人运行它时，进程的有效 UID 都变成 root。这是设计上合法的机制（比如 <code>passwd</code> 需要改 root 属主的 <code>/etc/shadow</code>），但如果被保护程序内部存在漏洞，就是提权入口。</p>
+
+      <h3>枚举 SUID 文件</h3>
+      <pre><code>find / -perm -4000 -type f 2>/dev/null
+find / \( -perm -4000 -o -perm -2000 \) -type f 2>/dev/null</code></pre>
+
+      <h3>经典可被利用的 SUID 程序</h3>
+      <table>
+        <thead>
+          <tr><th>程序</th><th>风险</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>find</td><td><code>find . -exec /bin/sh \;</code> 直接获得 root shell</td></tr>
+          <tr><td>bash / sh</td><td>执行 <code>bash -p</code>，保留 SUID 得到 root shell</td></tr>
+          <tr><td>cp / dd</td><td>用 <code>cp /bin/sh /tmp/sh; chmod +s /tmp/sh</code> 复制并加 SUID</td></tr>
+          <tr><td>vim</td><td>:!/bin/sh 或 :!sh! 跳出获得 root shell</td></tr>
+        </tbody>
+      </table>
+
+      <h2>三、Capabilities：更细粒度的 root 权限拆分</h2>
+      <p>Capabilities 是 Linux 把 root 的权限拆分成 30 多个独立能力（cap）。程序可以只持有某个能力而完全不需要是 root。配置错误的 Capabilities 同样是提权点。</p>
+
+      <h3>常见可被利用的能力</h3>
+      <pre><code># 枚举
+getcap -r / 2>/dev/null
+capsh --print   # 查看当前 shell 的 capabilities
+
+# 持有 cap_sys_admin 的 curl：读取本地任意文件
+curl --remote-name http://localhost:8080/x -w "%{url_effective}"
+
+# 持有 cap_setuid 的程序可直接 setuid(0)
+
+# 持有 cap_dac_read_search 的程序可读取任意文件</code></pre>
+
+      <h3>典型误配置</h3>
+      <ul>
+        <li>业务容器逃逸：给容器内可写目录里的二进制加了 <code>cap_sys_admin</code>。</li>
+        <li>把 <code>cap_dac_read_search</code> 挂在 cron 定期执行但可被普通用户替换的二进制上。</li>
+        <li>调试遗留：开发阶段给某程序加了能力，上线前忘记去掉。</li>
+      </ul>
+
+      <h2>四、其他高频检查点</h2>
+      <h3>sudo 规则</h3>
+      <pre><code>sudo -nl
+# 如果看到某可编辑的脚本或 find/nmap/vim 等被允许无密码执行，逐个判断：
+#   sudo find . -exec /bin/sh \;
+#   sudo vim /tmp/x.txt 然后 :!/bin/sh
+#   sudo nmap --exec nse_script 等</code></pre>
+
+      <h3>可写的 /etc 与 PATH 劫持</h3>
+      <pre><code>ls -ld /etc/passwd /etc/shadow /etc
+# 若 /etc/passwd 或 /etc/shadow 对普通用户可写，直接写入后门用户
+
+# PATH 劫持：root 的 PATH 指向普通用户可写的目录且其中已有同名工具，
+# 替换为恶意的 getcap/setuid 版本</code></pre>
+
+      <h3>Cron 任务</h3>
+      <pre><code>ls -la /etc/cron* /var/spool/cron/
+# 若 cron 任务调用普通用户可写的脚本或二进制，替换内容即可以 root 执行</code></pre>
+
+      <h2>五、小结</h2>
+      <p>提权排查的核心思路：先确认「当前用户能影响哪些 root 会执行的东西」。SUID 让普通调用变成 root 身份调用；Capabilities 给部分程序赋予了越权的细粒度能力；sudo 规则和 cron 决定了 root 会运行哪些脚本。把这三个方向枚举一遍，大多数环境里的高危点都能被快速定位。</p>
+    </div>
+
+    <nav class="article-nav">
+      <a href="/blog/github-actions.html">
+        <span class="nav-label">上一篇</span>
+        用 GitHub Actions 自动化部署静态博客
+      </a>
+      <a href="/blog/git-advanced.html" class="next">
+        <span class="nav-label">下一篇</span>
+        Git 进阶：rebase、cherry-pick 与 worktree
+      </a>
+    </nav>
+  </div>
+</article>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-social">
+      <a href="https://github.com/wh1tZz5" target="_blank" rel="noopener" aria-label="GitHub"><i class="fab fa-github"></i></a>
+      <a href="mailto:hi@example.com" aria-label="Email"><i class="fas fa-envelope"></i></a>
+      <a href="/feed.xml" aria-label="RSS"><i class="fas fa-rss"></i></a>
+    </div>
+    <p class="footer-text">
+      © 2026 wh1tZz5 · 保持好奇，保持热爱<br>
+      Powered by <a href="https://pages.github.com" target="_blank" rel="noopener">GitHub Pages</a>
+    </p>
+  </div>
+</footer>
+
+<script src="/js/main.js"></script>
+</body>
+</html>

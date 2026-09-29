@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>项目 · wh1tZz5</title>
+<meta name="description" content="wh1tZz5 的项目集合。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<header class="site-header" id="header">
+  <div class="container">
+    <nav class="nav">
+      <a href="/" class="nav-logo">wh1tZz5</a>
+      <ul class="nav-menu">
+        <li><a href="/">首页</a></li>
+        <li><a href="/blog/">博客</a></li>
+        <li><a href="/projects.html" class="active">项目</a></li>
+        <li><a href="/about.html">关于</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<section class="page-title">
+  <div class="container">
+    <h1>项目</h1>
+    <p>我参与或主导的一些项目，多数还在迭代中。点击卡片可跳转到仓库或演示地址。</p>
+  </div>
+</section>
+
+<section class="projects">
+  <div class="container">
+
+    <a class="project-card" href="https://github.com/wh1tZz5" target="_blank" rel="noopener">
+      <div class="project-card-header">
+        <h3>static-blog</h3>
+        <i class="project-link fas fa-arrow-up-right-from-square"></i>
+      </div>
+      <p>当前博客本身。纯静态页面，托管在 GitHub Pages，无任何服务端逻辑，内容直接以 HTML 维护。</p>
+      <div class="project-card-footer">
+        <span class="post-tag">HTML / CSS</span>
+        <span class="post-tag">GitHub Pages</span>
+      </div>
+    </a>
+
+    <a class="project-card" href="https://github.com/wh1tZz5" target="_blank" rel="noopener">
+      <div class="project-card-header">
+        <h3>url-checker</h3>
+        <i class="project-link fas fa-arrow-up-right-from-square"></i>
+      </div>
+      <p>批量 URL 状态检测工具：并发探测一批 URL 的可达性与响应码，支持代理池与结果去重导出 CSV。</p>
+      <div class="project-card-footer">
+        <span class="post-tag">Python</span>
+        <span class="post-tag">CLI</span>
+      </div>
+    </a>
+
+    <a class="project-card" href="https://github.com/wh1tZz5" target="_blank" rel="noopener">
+      <div class="project-card-header">
+        <h3>git-flow-demo</h3>
+        <i class="project-link fas fa-arrow-up-right-from-square"></i>
+      </div>
+      <p>配合博客「Git 进阶」文章的示例仓库，包含一套模拟多人协作场景的提交历史，方便对照练习 rebase 与 cherry-pick。</p>
+      <div class="project-card-footer">
+        <span class="post-tag">Git</span>
+        <span class="post-tag">教程</span>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-social">
+      <a href="https://github.com/wh1tZz5" target="_blank" rel="noopener" aria-label="GitHub"><i class="fab fa-github"></i></a>
+      <a href="mailto:hi@example.com" aria-label="Email"><i class="fas fa-envelope"></i></a>
+      <a href="/feed.xml" aria-label="RSS"><i class="fas fa-rss"></i></a>
+    </div>
+    <p class="footer-text">
+      © 2026 wh1tZz5 · 保持好奇，保持热爱<br>
+      Powered by <a href="https://pages.github.com" target="_blank" rel="noopener">GitHub Pages</a>
+    </p>
+  </div>
+</footer>
+
+<script src="/js/main.js"></script>
+</body>
+</html>

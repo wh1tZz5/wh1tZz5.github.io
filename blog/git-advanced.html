@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Git 进阶：rebase、cherry-pick 与 worktree · wh1tZz5</title>
+<meta name="description" content="掌握交互式 rebase 和 cherry-pick，让版本历史保持整洁，用 worktree 同时处理多个分支。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/article.css">
+</head>
+<body>
+
+<header class="site-header" id="header">
+  <div class="container">
+    <nav class="nav">
+      <a href="/" class="nav-logo">wh1tZz5</a>
+      <ul class="nav-menu">
+        <li><a href="/">首页</a></li>
+        <li><a href="/blog/" class="active">博客</a></li>
+        <li><a href="/projects.html">项目</a></li>
+        <li><a href="/about.html">关于</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<article class="article">
+  <div class="container">
+    <div class="article-meta">
+      <span>2026-02-28</span>
+      <span class="dot"></span>
+      <span class="post-tag">工具</span>
+      <span class="dot"></span>
+      <span>约 10 分钟</span>
+    </div>
+    <h1>Git 进阶：rebase、cherry-pick 与 worktree</h1>
+
+    <div class="article-body">
+      <p>用过 <code>git merge</code> 之后，仓库里常常混着一堆「Merge branch 'xxx'」的合并提交，历史又长又乱。本文整理三个我几乎每天都在用的进阶命令：<code>rebase</code>、<code>cherry-pick</code>、<code>worktree</code>，并给出一些避坑经验。</p>
+
+      <h2>一、交互式 rebase：整理你的提交历史</h2>
+      <p>交互式 rebase 允许你在合并前重新排列、合并、修改、删除提交。基本用法：</p>
+      <pre><code>git rebase -i HEAD~5</code></pre>
+      <p>编辑器里会出现最近 5 个提交，每行对应一个指令：</p>
+      <pre><code>pick  a1b2c3d feat: 新增登录接口
+pick  e4f5g6h fix: 修正 token 过期判断
+pick  i7j8k9l docs: 补充 README
+pick  m0n1o2p chore: 清理无用变量
+pick  q3r4s5t test: 补充单元测试</code></pre>
+
+      <h3>常用指令</h3>
+      <ul>
+        <li><code>pick</code>：保留提交</li>
+        <li><code>drop</code> / 删除整行：丢弃该提交</li>
+        <li><code>squash</code>：把该提交合并到前一个，适合「一个功能多个小提交」的场景</li>
+        <li><code>reword</code>：保留提交但改 commit message</li>
+        <li><code>edit</code>：停下来在该提交处暂停，可以拆分或改代码</li>
+      </ul>
+
+      <div class="callout"><p><strong>黄金法则：</strong> 永远不要对「已经推到远端、且他人可能已基于其开发」的提交做 rebase。否则协作者的本地历史会和你不一致，pull 时产生混乱。本地未共享的分支随便整理。</p></div>
+
+      <h3>把多个提交压成一个</h3>
+      <pre><code>git rebase -i main
+# 把想合并的提交都改成 squash（第一个保留 pick）
+# 保存后依次弹出编辑器填写合并后的 commit message</code></pre>
+
+      <h2>二、cherry-pick：把别的分支上的某个提交拿过来</h2>
+      <p>场景：一个 hotfix 提交只存在于 <code>release</code> 分支，你需要单独把这一个改动应用到 <code>main</code>，而不想整支合并。</p>
+      <pre><code>git checkout main
+git cherry-pick a1b2c3d</code></pre>
+      <p>一次挑多个提交、或者跨一段区间：</p>
+      <pre><code>git cherry-pick a1b2c3d e4f5g6h
+git cherry-pick main..feature-x    # feature-x 上但 main 没有的提交</code></pre>
+      <p>遇到冲突时：</p>
+      <pre><code>git cherry-pick --abort       # 放弃整个 pick
+git cherry-pick --continue    # 解决冲突后继续
+git cherry-pick --skip        # 跳过当前提交</code></pre>
+
+      <h3>--no-commit 技巧</h3>
+      <p>只想拿提交的内容、不想保留它的 message：</p>
+      <pre><code>git cherry-pick --no-commit a1b2c3d
+git commit -m "我自己的描述"</code></pre>
+
+      <h2>三、worktree：多分支并行开发不互相打扰</h2>
+      <p>传统流程：要切分支前，得先把当前工作区清理干净（commit 或 stash），切过去再切回来。worktree 让你把同一个仓库的多个分支同时展开在磁盘上不同的目录，互不影响。</p>
+      <pre><code># 把 hotfix 分支展开到 ../worktrees/hotfix 目录
+git worktree add ../worktrees/hotfix hotfix
+
+# 查看所有 worktree
+git worktree list
+
+# 不再需要时移除
+git worktree remove ../worktrees/hotfix</code></pre>
+
+      <p>典型用法：当前目录继续开发 feature，同时用另一个 worktree 目录快速处理 hotfix，不需要切换工作区、不需要 stash。每个 worktree 有独立的 index 和工作区，但共享同一个 <code>.git</code> 对象库，磁盘占用很小。</p>
+
+      <h3>注意</h3>
+      <ul>
+        <li>同一个分支不能同时被两个 worktree 检出。</li>
+        <li>用 <code>git worktree remove</code> 删除，不要直接 <code>rm -rf</code>（会留下孤儿目录记录）。</li>
+      </ul>
+
+      <h2>四、速查表</h2>
+      <table>
+        <thead>
+          <tr><th>需求</th><th>命令</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>整理本地提交历史</td><td><code>git rebase -i main</code></td></tr>
+          <tr><td>把单提交摘到别的分支</td><td><code>git cherry-pick &lt;sha&gt;</code></td></tr>
+          <tr><td>多分支并行</td><td><code>git worktree add &lt;dir&gt; &lt;branch&gt;</code></td></tr>
+          <tr><td>撤销一次提交（保留改动）</td><td><code>git reset HEAD~1</code></td></tr>
+          <tr><td>撤销一次提交（也撤改动）</td><td><code>git reset --hard HEAD~1</code></td></tr>
+        </tbody>
+      </table>
+
+      <h2>五、小结</h2>
+      <p>rebase 负责「让历史好看」，cherry-pick 负责「精准搬运改动」，worktree 负责「多任务并行」。三者配合，基本能覆盖日常协作里的所有分支管理需求。</p>
+    </div>
+
+    <nav class="article-nav">
+      <a href="/blog/linux-privesc.html">
+        <span class="nav-label">上一篇</span>
+        Linux 提权基础：SUID 与 Capabilities 详解
+      </a>
+      <a href="/blog/xss-csrf.html" class="next">
+        <span class="nav-label">下一篇</span>
+        Web 安全入门：XSS 与 CSRF 核心解析
+      </a>
+    </nav>
+  </div>
+</article>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-social">
+      <a href="https://github.com/wh1tZz5" target="_blank" rel="noopener" aria-label="GitHub"><i class="fab fa-github"></i></a>
+      <a href="mailto:hi@example.com" aria-label="Email"><i class="fas fa-envelope"></i></a>
+      <a href="/feed.xml" aria-label="RSS"><i class="fas fa-rss"></i></a>
+    </div>
+    <p class="footer-text">
+      © 2026 wh1tZz5 · 保持好奇，保持热爱<br>
+      Powered by <a href="https://pages.github.com" target="_blank" rel="noopener">GitHub Pages</a>
+    </p>
+  </div>
+</footer>
+
+<script src="/js/main.js"></script>
+</body>
+</html>
